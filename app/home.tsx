@@ -1,3 +1,4 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
 import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
 
@@ -12,6 +13,7 @@ export default function HomeScreen() {
   const handleDeleteAccount = () => {
     // Handle login submission
     console.log('Login attempt:', { username, password });
+    router.replace('/');
   };
 
   return (
