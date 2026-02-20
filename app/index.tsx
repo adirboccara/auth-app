@@ -1,5 +1,6 @@
+import { router } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/nativewindui/button';
 import { Input } from '@/components/nativewindui/input';
@@ -12,8 +13,12 @@ export default function LoginScreen() {
   const [password, setPassword] = useState('');
 
   const handleSubmit = () => {
-    // Handle login submission
-    console.log('Login attempt:', { username, password });
+    if (username === 'adir' && password === '1234') {
+      router.replace('/home');
+      return;
+    }
+
+    alert('Invalid credentials');
   };
 
   return (
@@ -53,9 +58,9 @@ export default function LoginScreen() {
             <Button
               onPress={handleSubmit}
               style={styles.submitButton}
-              disabled={!username || !password}>
-              Submit
-            </Button>
+              >
+                <Text>Submit</Text>
+              </Button>
           </View>
         </View>
       </KeyboardAvoidingView>
