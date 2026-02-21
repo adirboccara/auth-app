@@ -1,19 +1,45 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/nativewindui/button';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useAuth } from '@/context/auth-context';
+import { API_BASE_URL } from '@/lib/api';
 
 export default function HomeScreen() {
-  const [username, setUsername] = useState('');
-  const [password, setPassword] = useState('');
+  const { user, setUser } = useAuth();
+  const [loading, setLoading] = useState(false);
 
-  const handleDeleteAccount = () => {
-    // Handle login submission
-    console.log('Login attempt:', { username, password });
-    router.replace('/');
+  const handleDeleteAccount = async () => {
+    if (!user?.id) {
+      Alert.alert('Error', 'User not found');
+      return;
+    }
+
+    setLoading(true);
+    try {
+      const response = await fetch(`${API_BASE_URL}/users/${user.id}/deactivate`, {
+        method: 'PATCH',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      });
+
+      if (response.ok) {
+        setUser(null);
+        router.replace('/');
+      } else if (response.status === 404) {
+        Alert.alert('Error', 'User not found');
+      } else {
+        Alert.alert('Error', 'Failed to deactivate account. Please try again.');
+      }
+    } catch (error) {
+      Alert.alert('Error', 'Failed to connect to server. Please check your connection.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -23,15 +49,16 @@ export default function HomeScreen() {
         style={styles.keyboardView}>
         <View style={styles.formContainer}>
           <ThemedText type="title" style={styles.title}>
-            Welcome
+            Welcome{user?.username ? `, ${user.username}` : ''}
           </ThemedText>
 
           <View style={styles.form}>
             <Button
               onPress={handleDeleteAccount}
               style={styles.submitButton}
+              disabled={loading}
             >
-              Delete Account?
+              <Text>{loading ? 'Deactivating...' : 'Delete Account?'}</Text>
             </Button>
           </View>
         </View>

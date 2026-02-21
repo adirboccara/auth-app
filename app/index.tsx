@@ -1,24 +1,82 @@
 import { router } from 'expo-router';
 import { useState } from 'react';
-import { KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
+import { Alert, KeyboardAvoidingView, Platform, StyleSheet, Text, View } from 'react-native';
 
 import { Button } from '@/components/nativewindui/button';
 import { Input } from '@/components/nativewindui/input';
 import { Label } from '@/components/nativewindui/label';
 import { ThemedText } from '@/components/themed-text';
 import { ThemedView } from '@/components/themed-view';
+import { useAuth } from '@/context/auth-context';
+import { API_BASE_URL } from '@/lib/api';
 
 export default function LoginScreen() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
+  const [loading, setLoading] = useState(false);
+  const { setUser } = useAuth();
 
-  const handleSubmit = () => {
-    if (username === 'adir' && password === '1234') {
-      router.replace('/home');
+  const showAlert = (title: string, message: string) => {
+    if (Platform.OS === 'web') {
+      window.alert(`${title}: ${message}`);
+    } else {
+      Alert.alert(title, message);
+    }
+  };
+
+  const handleSubmit = async () => {
+    if (!username || !password) {
+      showAlert('Error', 'Please enter both username and password');
       return;
     }
 
-    alert('Invalid credentials');
+    setLoading(true);
+    try {
+      console.log('Login attempt:', { username, apiUrl: API_BASE_URL });
+      
+      const response = await fetch(`${API_BASE_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ username, password }),
+      });
+
+      console.log('Login response status:', response.status, response.statusText);
+
+      if (response.ok) {
+        try {
+          const data = await response.json();
+          console.log('Login success data:', data);
+          
+          if (data.success && data.user) {
+            setUser(data.user);
+            console.log('User set, navigating to /home');
+            router.replace('/home');
+          } else {
+            showAlert('Error', 'Invalid response from server');
+          }
+        } catch (parseError) {
+          console.error('Failed to parse success response:', parseError);
+          showAlert('Error', 'Invalid response from server');
+        }
+      } else {
+        console.log('Login failed status:', response.status);
+
+        if (response.status === 401) {
+          showAlert('Error', 'your credentials are incorrect');
+        } else if (response.status === 403) {
+          showAlert('Error', 'Your account is inactive.');
+        } else {
+          showAlert('Error', 'Login failed. Please try again.');
+        }
+      }
+    } catch (error) {
+      console.error('Login network error:', error);
+      showAlert('Error', 'Failed to connect to server. Please check your connection.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -58,8 +116,9 @@ export default function LoginScreen() {
             <Button
               onPress={handleSubmit}
               style={styles.submitButton}
+              disabled={loading}
               >
-                <Text>Submit</Text>
+                <Text>{loading ? 'Logging in...' : 'Submit'}</Text>
               </Button>
           </View>
         </View>
