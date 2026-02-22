@@ -1,5 +1,9 @@
 # auth-app (Expo + NestJS + MongoDB)
 
+## Demo
+
+![App Demo](assets/demo.gif)
+
 Cross-platform app (Web / iOS / Android) with a simple auth flow:
 - Login screen
 - Home screen with **Delete Account** (soft delete / deactivate)
