@@ -6,6 +6,11 @@ import { User } from './user.schema';
 const SEED_USERS = [
   { username: 'demo', password: '123456' },
   { username: 'adir', password: '123456' },
+  { username: 'a', password: '123456' },
+  { username: 'b', password: '123456' },
+  { username: 'c', password: '123456' },
+  { username: 'd', password: '123456' },
+  { username: 'e', password: '123456' },
 ];
 
 @Injectable()
