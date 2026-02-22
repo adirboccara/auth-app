@@ -49,7 +49,7 @@ Backend built with **NestJS** + **MongoDB (Mongoose)**.
 ## Demo Users
 
 Seeded automatically on backend startup:
-- `demo` / `123456`
+-
 - `adir` / `123456`
 
 > After deactivation, the user becomes inactive and login returns 403.
@@ -63,4 +63,4 @@ Seeded automatically on backend startup:
 
 Body:
 ```json
-{ "username": "demo", "password": "123456" }
+{ "username": "adir", "password": "123456" }
