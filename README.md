@@ -54,7 +54,10 @@ Backend built with **NestJS** + **MongoDB (Mongoose)**.
 
 Seeded automatically on backend startup:
 -
-- `adir` / `123456`
+- `b` / `123456`
+- `c` / `123456`
+- `d` / `123456`
+- `e` / `123456`
 
 > After deactivation, the user becomes inactive and login returns 403.
 
